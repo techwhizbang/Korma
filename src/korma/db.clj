@@ -22,13 +22,19 @@
   [spec]
   (let [excess (or (:excess-timeout spec) (* 30 60))
         idle (or (:idle-timeout spec) (* 3 60 60))
+        minimum-pool-size (or (:minimum-pool-size spec) 3)
+        maximum-pool-size (or (:maximum-pool-size spec) 15)
+
         cpds (doto (ComboPooledDataSource.)
                (.setDriverClass (:classname spec))
                (.setJdbcUrl (str "jdbc:" (:subprotocol spec) ":" (:subname spec)))
                (.setUser (:user spec))
                (.setPassword (:password spec))
                (.setMaxIdleTimeExcessConnections excess)
-               (.setMaxIdleTime idle))]
+               (.setMaxIdleTime idle)
+               (.setMinPoolSize minimum-pool-size)
+               (.setMaxPoolSize maximum-pool-size))]
+
     {:datasource cpds}))
 
 (defn delay-pool
